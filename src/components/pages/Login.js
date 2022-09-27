@@ -8,7 +8,6 @@ import { useNavigate } from 'react-router-dom';
 export default function Login() {
 
   const navigate = useNavigate();
-
   const [loginInput, setLogin] = useState({
     nombre_usuario: '',
     contrasenia: '',
@@ -32,10 +31,10 @@ export default function Login() {
         if (res.data.status === 200) {
           localStorage.setItem('auth_token', res.data.access_token);
           localStorage.setItem('auth_usuario', res.data.auth_usuario);
-          swal("Success", res.data.message, "success");
           navigate('/');
+          swal("Exito!", res.data.message, "success");
         } else if (res.data.status === 401) {
-          swal("Warning", res.data.message, "warning");
+          swal("Alerta!", res.data.message, "warning");
         } else {
           setLogin({ ...loginInput, error_list: res.data.validation_errors });
         }
