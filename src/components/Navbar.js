@@ -1,102 +1,69 @@
-import React, { useState } from 'react';
-import { Button } from './Button';
-import { Link } from 'react-router-dom';
-import './Navbar.css';
-import Dropdown from './Dropdown';
+import axios from 'axios';
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import swal from 'sweetalert';
+
 
 function Navbar() {
-  const [click, setClick] = useState(false);
-  const [dropdown, setDropdown] = useState(false);
+  const navigate = useNavigate();
+  const logoutSubmit = (e) => {
+    e.preventDefault();
+    axios.post(`/api/logout`).then(res => {
+      if (res.data.status === 200) {
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('auth_usuario');
+        navigate('/');
+        swal("Exito!", res.data.message, "success");
+      } else {
 
-  const handleClick = () => setClick(!click);
-  const closeMobileMenu = () => setClick(false);
+      }
+    });
+  }
 
-  const onMouseEnter = () => {
-    if (window.innerWidth < 960) {
-      setDropdown(false);
-    } else {
-      setDropdown(true);
-    }
-  };
-
-  const onMouseLeave = () => {
-    if (window.innerWidth < 960) {
-      setDropdown(false);
-    } else {
-      setDropdown(false);
-    }
-  };
+  var AuthButtons = '';
+  if (!localStorage.getItem('auth_token')) {
+    AuthButtons = (
+      <li className="nav-item">
+        <Link className="nav-link text-white" to="/login">Iniciar Sesion</Link>
+      </li>
+    )
+  } else {
+    AuthButtons = (
+      <li className="nav-item">
+        <button type='button' onClick={logoutSubmit} className='nav-link btn btn-danger text-white'>Cerrar Sesion</button>
+      </li>
+    )
+  }
 
   return (
-    <>
-      <nav className='navbar'>
-        <Link to='/' className='navbar-logo' onClick={closeMobileMenu}>
-          PRESUS-CAR
-          <i class='fab fa-firstdraft' />
-        </Link>
-        <div className='menu-icon' onClick={handleClick}>
-          <i className={click ? 'fas fa-times' : 'fas fa-bars'} />
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow sticky-top">
+      <div className="container-fluid">
+        <Link className="navbar-brand" to="/">PRESUS-CAR</Link>
+        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span className="navbar-toggler-icon"></span>
+        </button>
+        <div className="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li className="nav-item">
+              <Link className="nav-link active" aria-current="page" to="/">Inicio</Link>
+            </li>
+            <li className="nav-item dropdown">
+              <Link className="nav-link dropdown-toggle text-white" to="/#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Administrar
+              </Link>
+              <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><Link className="dropdown-item" to="/aseguradoras">Aseguradoras</Link></li>
+                <li><Link className="dropdown-item" to="/talleres">Talleres</Link></li>
+                <li><Link className="dropdown-item" to="/marcas">Marcas</Link></li>
+                <li><Link className="dropdown-item" to="/vehiculos">Vehiculos</Link></li>
+                <li><Link className="dropdown-item" to="/repuestos">Repuestos</Link></li>
+              </ul>
+            </li>
+            {AuthButtons}
+          </ul>
         </div>
-        <ul className={click ? 'nav-menu active' : 'nav-menu'}>
-          <li className='nav-item'>
-            <Link to='/' className='nav-links' onClick={closeMobileMenu}>
-              Inicio
-            </Link>
-          </li>
-          <li
-            className='nav-item'
-            onMouseEnter={onMouseEnter}
-            onMouseLeave={onMouseLeave}
-          >
-            <Link
-              to='/servicios'
-              className='nav-links'
-              onClick={closeMobileMenu}
-            >
-              Servicios <i className='fas fa-caret-down' />
-            </Link>
-            {dropdown && <Dropdown />}
-          </li>
-          <li className='nav-item'>
-            <Link
-              to='/vehiculos'
-              className='nav-links'
-              onClick={closeMobileMenu}
-            >
-              Vehiculos
-            </Link>
-          </li>
-          <li className='nav-item'>
-            <Link
-              to='/marcas'
-              className='nav-links'
-              onClick={closeMobileMenu}
-            >
-              Marcas
-            </Link>
-          </li>
-          <li className='nav-item'>
-            <Link
-              to='/usuarios'
-              className='nav-links'
-              onClick={closeMobileMenu}
-            >
-              Usuarios
-            </Link>
-          </li>
-          <li>
-            <Link
-              to='/login'
-              className='nav-links-mobile'
-              onClick={closeMobileMenu}
-            >
-              Iniciar Sesión
-            </Link>
-          </li>
-        </ul>
-        <Button />
-      </nav>
-    </>
+      </div>
+    </nav>
   );
 }
 
