@@ -52,99 +52,91 @@ label {
 /*
 */
 
-.home,
-.servicios,
-.vehiculos,
-.marcas,
-.sign-up,
-.aseguradoras,
-.repuestos,
-.talleres,
-.usuarios {
-  display: flex;
-  height: 90vh;
-  align-items: center;
-  justify-content: center;
-  font-size: 3rem;
+table.marcaTable{
+  width: 80%;
+}
+
+table.marcaTable th, td{
+  text-align: center;
 }
 
 .home {
-  background-image: url('./images/img-1.jpg');
+  /* background-image: url('./images/img-1.jpg'); */
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
-  color: #fff;
+  color: #000;
   font-size: 100px;
 }
 
 .servicios {
-  background-image: url('./images/img-2.jpg');
+  /* background-image: url('./images/img-2.jpg'); */
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
-  color: #fff;
+  color: #000;
   font-size: 100px;
 }
 
 .vehiculos {
-  background-image: url('./images/img-3.jpg');
+  /* background-image: url('./images/img-3.jpg'); */
   background-position: center;
   background-size: fill;
   background-repeat: no-repeat;
-  color: #fff;
+  color: #000;
   font-size: 100px;
 }
 
 .marcas {
-  background-image: url('./images/img-4.jpg');
+  /* background-image: url('./images/img-4.jpg'); */
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
-  color: #fff;
+  color: #000;
   font-size: 100px;
 }
 
 .sign-up {
-  background-image: url('./images/img-7.jpg');
+  /* background-image: url('./images/img-7.jpg'); */
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
-  color: #fff;
+  color: #000;
   font-size: 100px;
 }
 
 .repuestos {
-  background-image: url('./images/img-6.jpg');
+  /* background-image: url('./images/img-6.jpg'); */
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
-  color: #fff;
+  color: #000;
   font-size: 100px;
 }
 
 .aseguradoras {
-  background-image: url('./images/img-5.jpg');
+  /* background-image: url('./images/img-5.jpg'); */
   background-position: bottom;
   background-size: cover;
   background-repeat: no-repeat;
-  color: #fff;
+  color: #000;
   font-size: 100px;
 }
 
 .talleres {
-  background-image: url('./images/img-5.jpg');
+  /* background-image: url('./images/img-5.jpg'); */
   background-position: bottom;
   background-size: cover;
   background-repeat: no-repeat;
-  color: #fff;
+  color: #000;
   font-size: 100px;
 }
 
 .usuarios {
-  background-image: url('./images/img-2.jpg');
-  background-position: center;
+  /* background-image: url('./images/img-2.jpg'); */
+  /* background-position: center; */
   background-size: cover;
   background-repeat: no-repeat;
-  color: #fff;
+  color: #000;
   font-size: 100px;
 }
