@@ -29,15 +29,16 @@ function App() {
     <Router>
       <Navbar />
       <Routes>
-        <Route path='/' element = {< Home />}  />
-        <Route path='/servicios' element = {< Servicios />}  />
-        <Route path='/vehiculos' element = {< Vehiculos />}  />
-        <Route path='/marcas' element = {< Marcas />}  />
+        <Route path='/' element={< Home />} />
+        <Route path='/servicios' element={< Servicios />} />
+        <Route path='/vehiculos' element={< Vehiculos />} />
+        <Route path='/marcas' element={< Marcas />} />
         <Route path='/login' element = {< Login />}  />
-        <Route path='/repuestos' element = {< Repuestos />}  />
-        <Route path='/talleres' element = {< Talleres />}  />
-        <Route path='/aseguradoras' element = {< Aseguradoras />}  />
-        <Route path='/usuarios' element = {< Usuarios />}  />
+        <Route path='/repuestos' element={< Repuestos />} />
+        <Route path='/talleres' element={< Talleres />} />
+        <Route path='/aseguradoras' element={< Aseguradoras />} />
+        <Route path='/usuarios' element={< Usuarios />} />
+        {/* <Route path='/login' element={localStorage.getItem('auth_token') ? <redirect to='/' /> : <Login />} /> */}
       </Routes>
     </Router>
   );
