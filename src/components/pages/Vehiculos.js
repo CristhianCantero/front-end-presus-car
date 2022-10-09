@@ -5,32 +5,19 @@ import { useState } from 'react';
 
 export default function Vehiculos() {
   const [listadoVehiculos, setlistadoVehiculos] = useState([]);
-  const [listadoMarcas, setlistadoMarcas] = useState([]);
-
 
   useEffect(() => {
     axios.get(`/api/vehiculos`)
-      .then(res => setlistadoVehiculos(res.data.data))
+      .then(res => setlistadoVehiculos(res.data))
       .catch(err => console.log(`Error: ${err}`));
   }, []);
-
-  useEffect(() => {
-    axios.get(`/api/marcas`)
-      .then(res => setlistadoMarcas(res.data.data))
-      .catch(err => console.log(`Error: ${err}`));
-  }, []);
-
-  console.log(listadoMarcas)
 
   const verVehiculos_HTMLTABLE = listadoVehiculos.map((item) => {
-    var indexMarca = listadoMarcas.findIndex((marca) => marca.id_marca == item.id_marca);
-    const objMarcaVehiculo = listadoMarcas[indexMarca];
-    // console.log(objMarcaVehiculo)
     return (
       <tr key={item.id_vehiculo}>
         <td>{item.id_vehiculo}</td>
-        <td>{item.nombre}</td>
-        <td>{item.id_marca}</td>
+        <td>{item.nombreVehiculo}</td>
+        <td>{item.nombreMarca}</td>
         <td>
           <button type='button' className='btn btn-primary'>Actualizar</button>
         </td>
@@ -44,7 +31,7 @@ export default function Vehiculos() {
   return (
     <>
       <div className="d-flex justify-content-center p-4">
-        <h1 className='name'>Administracion de Repuestos</h1>
+        <h1 className='name'>Administración de Vehiculos</h1>
       </div>
       <div className="d-flex justify-content-center">
         <table className="marcaTable table table-hover">
