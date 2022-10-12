@@ -52,11 +52,12 @@ label {
 /*
 */
 
-table.marcaTable{
+table.marcaTable {
   width: 80%;
 }
 
-table.marcaTable th, td{
+table.marcaTable th,
+td {
   text-align: center;
 }
 
@@ -139,4 +140,9 @@ table.marcaTable th, td{
   background-repeat: no-repeat;
   color: #000;
   font-size: 100px;
+}
+
+.formulario-presupuesto {
+  width: 70%;
+  margin: auto;
 }

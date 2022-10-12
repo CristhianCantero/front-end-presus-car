@@ -11,6 +11,7 @@ import Repuestos from './components/pages/Repuestos';
 import Talleres from './components/pages/Talleres';
 import Aseguradoras from './components/pages/Aseguradoras';
 import Usuarios from './components/pages/Usuarios';
+import AltaPresupuesto from './components/pages/formPresupuestos';
 import axios from 'axios';
 
 // Defino defaults para las consultas axios y no repetirlas en todos los archivos.
@@ -38,6 +39,7 @@ function App() {
         <Route path='/talleres' element={< Talleres />} />
         <Route path='/aseguradoras' element={< Aseguradoras />} />
         <Route path='/usuarios' element={< Usuarios />} />
+        <Route path='/alta-presupuesto' element={< AltaPresupuesto />} />
         {/* <Route path='/login' element={localStorage.getItem('auth_token') ? <redirect to='/' /> : <Login />} /> */}
       </Routes>
     </Router>

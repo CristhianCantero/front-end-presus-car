@@ -47,6 +47,9 @@ function Navbar() {
             <li className="nav-item">
               <Link className="nav-link active" aria-current="page" to="/">Inicio</Link>
             </li>
+            <li className="nav-item">
+              <Link className="nav-link active" aria-current="page" to="/alta-presupuesto">Alta Presupuesto</Link>
+            </li>
             <li className="nav-item dropdown">
               <Link className="nav-link dropdown-toggle text-white" to="/#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Administrar
