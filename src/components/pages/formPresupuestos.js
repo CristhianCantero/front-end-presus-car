@@ -4,6 +4,8 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import swal from 'sweetalert';
 import { useNavigate } from 'react-router-dom';
+import { jsPDF } from "jspdf";
+import 'jspdf-autotable'
 
 export default function Presupuestos() {
     const navigate = useNavigate();
@@ -28,6 +30,11 @@ export default function Presupuestos() {
     const handleInput = (e) => {
         e.persist();
         setInformacionFormulario({ ...informacionFormulario, [e.target.name]: e.target.value });
+        if (e.target.name === "aseguradora") {
+            setNombreAseguradora(e.target.options[e.target.selectedIndex].text);
+        } else if (e.target.name === "id_vehiculo") {
+            setNombreVehiculo(e.target.options[e.target.selectedIndex].text);
+        }
     }
 
     // HACEMOS LA CONSULTA DE LOS REPUESTOS (ESTA CONFIGURADO PARA QUE CUANDO SE CARGUE LA PANTALLA SE INICIALICE CON EL VEHICULO 50)
@@ -43,6 +50,8 @@ export default function Presupuestos() {
     }, []);
 
     const date = new Date().toISOString().substring(0, 10)
+    const [nombreAseguradora, setNombreAseguradora] = useState("");
+    const [nombreVehiculo, setNombreVehiculo] = useState("");
     const [inputList, setInputList] = useState([]);
     const [codigoRepuesto, setAgregarRepuesto] = useState();
     const [descripcionRepuesto, setDescripcionRepuesto] = useState();
@@ -100,7 +109,7 @@ export default function Presupuestos() {
                     repuesto: codigoRepuesto,
                     descripcion: descripcionRepuesto,
                     precio_unitario: '',
-                    unidades: ''
+                    unidades: 1
                 }])
                 setAgregarRepuesto("")
                 setDescripcionRepuesto("")
@@ -117,7 +126,7 @@ export default function Presupuestos() {
                         repuesto: codigoRepuesto,
                         descripcion: descripcionRepuesto,
                         precio_unitario: '',
-                        unidades: ''
+                        unidades: 1
                     }])
                     setAgregarRepuesto("")
                     setDescripcionRepuesto("")
@@ -138,10 +147,125 @@ export default function Presupuestos() {
         setInputList(list);
     };
 
+    const generarPDF = dataPresupuesto => {
+        const doc = new jsPDF();
+        var objFecha = dataPresupuesto.fecha;
+        var arrayFecha = objFecha.split("-");
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(12)
+        doc.addImage("./RS-AUTOPARTES-LOGO1.png", 'png', 12, 0);
+        doc.text("Virgilio Amarante 4548 - Neuquén Capital", 55, 14, null, null, "left");
+        doc.text("Cel: 2994196885", 55, 22, null, null, "left");
+        doc.text("Mail: canterrepuestos@gmail.com", 55, 30, null, null, "left");
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(18)
+        doc.text("PRESUPUESTO - X", 200, 15, null, null, "right");
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(12)
+        doc.text("Numero de Presupuesto - "+dataPresupuesto.nroPresupuesto, 200, 22, null, null, "right");
+        doc.setFontSize(15)
+        doc.setFont("helvetica", "bold");
+        doc.text("Fecha de Emision: " + arrayFecha[2] + "/" + arrayFecha[1] + "/" + arrayFecha[0], 200, 30, null, null, "right");
+        doc.line(2, 35, doc.internal.pageSize.width - 2, 35); // horizontal line
+        doc.setFontSize(20)
+        doc.setFont("helvetica", "bold");
+        doc.text("DATOS PRESUPUESTO", 105, 45, "center");
+        doc.setFontSize(15)
+        doc.setFont("helvetica", "normal");
+        doc.text("Interesado: ", 10, 55, null, null, "left");
+        doc.text(dataPresupuesto.interesado, 40, 55, null, null, "left");
+        doc.text("Aseguradora: ", 10, 65, null, null, "left");
+        doc.text(nombreAseguradora, 45, 65, null, null, "left");
+        doc.text("Nro de Siniestro: ", 115, 65, null, null, "left");
+        doc.text(dataPresupuesto.nro_siniestro, 155, 65, null, null, "left");
+        doc.text("Vehiculo: ", 10, 75, null, null, "left");
+        doc.text(nombreVehiculo, 35, 75, null, null, "left");
+        doc.text("Año: ", 100, 75, null, null, "left");
+        doc.text(dataPresupuesto.anio_vehiculo, 112, 75, null, null, "left");
+        doc.text("Patente: ", 10, 85, null, null, "left");
+        doc.text(dataPresupuesto.patente, 35, 85, null, null, "left");
+        doc.text("Chasis: ", 70, 85, null, null, "left");
+        doc.text(dataPresupuesto.chasis, 88, 85, null, null, "left");
+        doc.line(2, 90, doc.internal.pageSize.width - 2, 90); // horizontal line
+        doc.setFontSize(20)
+        doc.setFont("helvetica", "bold");
+        doc.text("REPUESTOS", 105, 100, "center");
+
+        var columns = [
+            { title: "Codigo", dataKey: "repuesto" },
+            { title: "Repuesto", dataKey: "descripcion" },
+            { title: "Precio x Unidad", dataKey: "precio_unitario" },
+            { title: "Unidades", dataKey: "unidades" },
+        ];
+
+        var objetoRepuestos = Object.entries(dataPresupuesto.repuestos);
+        var rows = []
+        var subtotal = 0
+        for (let index = 0; index < objetoRepuestos.length; index++) {
+            var repuesto = objetoRepuestos[index][1];
+            var data = {
+                "repuesto": repuesto.repuesto,
+                "descripcion": repuesto.descripcion,
+                "precio_unitario": repuesto.precio_unitario,
+                "unidades": repuesto.unidades
+            };
+            subtotal = subtotal + (repuesto.precio_unitario * repuesto.unidades)
+            rows.push(data)
+        }
+
+        doc.autoTable(columns, rows, {
+            theme: 'striped',
+            startY: 105,
+            tableWidth: 'wrap',
+            margin: { left: 5 },
+            styles: {
+                overflow: 'linebreak',
+                columnWidth: 'auto',
+                font: 'arial',
+                fontSize: 12,
+                overflowColumns: 'linebreak',
+                textColor: [0, 0, 0],
+            },
+            columnStyles: {
+                repuesto: {
+                    halign: "center"
+                },
+                descripcion: {
+                    halign: "left",
+                    cellWidth: 120
+                },
+                precio_unitario: {
+                    halign: "center"
+                },
+                unidades: {
+                    halign: "center"
+                }
+            },
+            headerStyles: {
+                theme: 'grid',
+                fillColor: [208, 208, 208]
+            }
+        });
+        doc.setDrawColor(0, 0, 0);
+        var iva = subtotal * 0.21;
+        iva = iva.toFixed(2)
+        var subtotalSinIVA = subtotal - iva;
+        doc.setFontSize(15)
+        doc.setFont("helvetica", "normal");
+        doc.text("Subtotal (sin IVA): $" + subtotalSinIVA + ".-", 200, 250, null, null, "right");
+        doc.text("IVA (21%): $" + iva + ".-", 200, 260, null, null, "right");
+        doc.line(125, 263, doc.internal.pageSize.width - 5, 263); // horizontal line
+        doc.text("TOTAL (con IVA): $" + subtotal + ".-", 200, 270, null, null, "right");
+
+        doc.rect(2, 2, doc.internal.pageSize.width - 4, doc.internal.pageSize.height - 4, 'S');
+        var nombrePdf = "Presupuesto - " + nombreVehiculo + " - " + dataPresupuesto.patente + ".pdf";
+        doc.save(nombrePdf);
+    }
+
     const presupuestoSubmit = (e) => {
         e.preventDefault();
         const list = [...inputList];
-        var infoFormulario = {...informacionFormulario};
+        var infoFormulario = { ...informacionFormulario };
         infoFormulario['repuestos'] = { ...inputList };
         infoFormulario['fecha'] = date;
         if (list.length === 0) {
@@ -150,6 +274,9 @@ export default function Presupuestos() {
             axios.get('/sanctum/csrf-cookie').then(response => {
                 axios.post(`/api/presupuestos`, infoFormulario).then(res => {
                     if (res.data.status === 200) {
+                        var responsePresupuesto = res.data.datosPresupuesto;
+                        infoFormulario['nroPresupuesto'] = responsePresupuesto.id;
+                        generarPDF(infoFormulario);
                         navigate('/');
                         swal("Exito!", res.data.message, "success");
                     } else {
@@ -159,6 +286,18 @@ export default function Presupuestos() {
             });
         }
     }
+    // const presupuestoSubmit = (e) => {
+    //     e.preventDefault();
+    //     const list = [...inputList];
+    //     var infoFormulario = { ...informacionFormulario };
+    //     infoFormulario['repuestos'] = { ...inputList };
+    //     infoFormulario['fecha'] = date;
+    //     if (list.length === 0) {
+    //         swal("Error!", "No se puede generar un presupuesto SIN repuestos. Favor de agregar los repuestos pertinentes.", "warning");
+    //     } else {
+    //         generarPDF(infoFormulario);
+    //     }
+    // }
 
     return (
         <>
