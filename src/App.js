@@ -1,5 +1,6 @@
 import React from 'react';
 import Navbar from './components/Navbar';
+import PrivateRoutes from './components/PrivateRoutes';
 import './App.css';
 import Home from './components/pages/Home';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
@@ -26,21 +27,25 @@ axios.interceptors.request.use(function (config) {
 })
 
 function App() {
+  let auth = { 'token': localStorage.auth_token };
+
   return (
     <Router>
       <Navbar />
       <Routes>
-        <Route path='/' element={< Home />} />
-        <Route path='/servicios' element={< Servicios />} />
-        <Route path='/vehiculos' element={< Vehiculos />} />
-        <Route path='/marcas' element={< Marcas />} />
-        <Route path='/login' element = {< Login />}  />
-        <Route path='/repuestos' element={< Repuestos />} />
-        <Route path='/talleres' element={< Talleres />} />
-        <Route path='/aseguradoras' element={< Aseguradoras />} />
-        <Route path='/usuarios' element={< Usuarios />} />
-        <Route path='/alta-presupuesto' element={< AltaPresupuesto />} />
-        {/* <Route path='/login' element={localStorage.getItem('auth_token') ? <redirect to='/' /> : <Login />} /> */}
+        <Route path='/login' element={< Login />} />
+        <Route element={< PrivateRoutes />}>
+          <Route path='/' element={< Home />} />
+          <Route path='/servicios' element={< Servicios />} />
+          <Route path='/vehiculos' element={< Vehiculos />} />
+          <Route path='/marcas' element={< Marcas />} />
+          <Route path='/repuestos' element={< Repuestos />} />
+          <Route path='/talleres' element={< Talleres />} />
+          <Route path='/aseguradoras' element={< Aseguradoras />} />
+          <Route path='/usuarios' element={< Usuarios />} />
+          <Route path='/alta-presupuesto' element={< AltaPresupuesto />} />
+          <Route path='*' element={<p>No hay nada aqui! Error 404</p>} />
+        </Route>
       </Routes>
     </Router>
   );
