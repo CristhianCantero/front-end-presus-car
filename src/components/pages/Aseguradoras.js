@@ -30,7 +30,22 @@ export default function Aseguradoras() {
   return (
     <>
       <div className="d-flex justify-content-center p-4">
-        <h1 className='name'>Administracion de Aseguradoras</h1>
+        <h1 className='name'>Administración de Aseguradoras</h1>
+      </div>
+
+      <div className="d-flex justify-content-center">
+        <table className="marcaTable table table-hover">
+          <thead className="table-dark">
+            <tr>
+              <th>Cuit</th>
+              <th>Nombre</th>
+              <th colSpan={2}>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {verAseguradoras_HTMLTABLE}
+          </tbody>
+        </table>
       </div>
     </>
   );

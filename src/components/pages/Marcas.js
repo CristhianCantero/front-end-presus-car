@@ -33,7 +33,7 @@ export default function Marcas() {
   return (
     <>
       <div className="d-flex justify-content-center p-4">
-        <h1 className='name'>Administracion de Marcas</h1>
+        <h1 className='name'>Administración de Marcas</h1>
       </div>
       <div className="d-flex justify-content-center">
         <table className="marcaTable table table-hover">

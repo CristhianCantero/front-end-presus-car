@@ -31,7 +31,23 @@ export default function Repuestos() {
   return (
     <>
       <div className="d-flex justify-content-center p-4">
-        <h1 className='name'>Administracion de Repuestos</h1>
+        <h1 className='name'>Administración de Repuestos</h1>
+      </div>
+
+      <div className="d-flex justify-content-center">
+        <table className="marcaTable table table-hover">
+          <thead className="table-dark">
+            <tr>
+              <th>Código</th>
+              <th>Nombre</th>
+              <th>Stock</th>
+              <th colSpan={2}>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {verRepuestos_HTMLTABLE}
+          </tbody>
+        </table>
       </div>
     </>
   );
