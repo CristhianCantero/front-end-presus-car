@@ -61,6 +61,10 @@ td {
   text-align: center;
 }
 
+table.repuestosTable th, td {
+  text-align: center;
+}
+
 .home {
   /* background-image: url('./images/img-1.jpg'); */
   background-position: center;
@@ -143,6 +147,11 @@ td {
 }
 
 .formulario-presupuesto {
+  width: 70%;
+  margin: auto;
+}
+
+.consulta-stock{
   width: 70%;
   margin: auto;
 }

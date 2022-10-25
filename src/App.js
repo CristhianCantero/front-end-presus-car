@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import Navbar from './components/Navbar';
 import PrivateRoutes from './components/PrivateRoutes';
 import './App.css';
@@ -13,7 +14,7 @@ import Talleres from './components/pages/Talleres';
 import Aseguradoras from './components/pages/Aseguradoras';
 import Usuarios from './components/pages/Usuarios';
 import AltaPresupuesto from './components/pages/formPresupuestos';
-import axios from 'axios';
+import ConsultaStock from './components/pages/ConsultasStock';
 
 // Defino defaults para las consultas axios y no repetirlas en todos los archivos.
 axios.defaults.baseURL = "http://127.0.0.1:8000";
@@ -27,8 +28,6 @@ axios.interceptors.request.use(function (config) {
 })
 
 function App() {
-  let auth = { 'token': localStorage.auth_token };
-
   return (
     <Router>
       <Navbar />
@@ -44,6 +43,7 @@ function App() {
           <Route path='/aseguradoras' element={< Aseguradoras />} />
           <Route path='/usuarios' element={< Usuarios />} />
           <Route path='/alta-presupuesto' element={< AltaPresupuesto />} />
+          <Route path='/consulta-stock' element={< ConsultaStock />} />
           <Route path='*' element={<p>No hay nada aqui! Error 404</p>} />
         </Route>
       </Routes>

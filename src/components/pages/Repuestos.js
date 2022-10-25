@@ -14,8 +14,8 @@ export default function Repuestos() {
 
   const verRepuestos_HTMLTABLE = listadoRepuestos.map((item) => {
     return (
-      <tr key={item.codigo_repuesto}>
-        <td>{item.codigo_repuesto}</td>
+      <tr key={item.codigo}>
+        <td>{item.codigo}</td>
         <td>{item.nombre}</td>
         <td>{item.stock}</td>
         <td>
