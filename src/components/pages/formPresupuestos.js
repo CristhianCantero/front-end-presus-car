@@ -10,6 +10,7 @@ import 'jspdf-autotable'
 export default function Presupuestos() {
     const navigate = useNavigate();
     // PRIMERO INICIALIZAMOS LOS LISTADOS
+    const [inputList, setInputList] = useState([]);
     const [listadoAseguradoras, setListadoAseguradoras] = useState([]);
     const [listadoMarcas, setListadoMarcas] = useState([]);
     const [listadoVehiculos, setListadoVehiculos] = useState([]);
@@ -52,7 +53,6 @@ export default function Presupuestos() {
     const date = new Date().toISOString().substring(0, 10)
     const [nombreAseguradora, setNombreAseguradora] = useState("");
     const [nombreVehiculo, setNombreVehiculo] = useState("");
-    const [inputList, setInputList] = useState([]);
     const [codigoRepuesto, setAgregarRepuesto] = useState();
     const [descripcionRepuesto, setDescripcionRepuesto] = useState();
     const [paso, setPasos] = useState(0);
@@ -286,18 +286,6 @@ export default function Presupuestos() {
             });
         }
     }
-    // const presupuestoSubmit = (e) => {
-    //     e.preventDefault();
-    //     const list = [...inputList];
-    //     var infoFormulario = { ...informacionFormulario };
-    //     infoFormulario['repuestos'] = { ...inputList };
-    //     infoFormulario['fecha'] = date;
-    //     if (list.length === 0) {
-    //         swal("Error!", "No se puede generar un presupuesto SIN repuestos. Favor de agregar los repuestos pertinentes.", "warning");
-    //     } else {
-    //         generarPDF(infoFormulario);
-    //     }
-    // }
 
     return (
         <>
@@ -415,7 +403,7 @@ export default function Presupuestos() {
                                         </div>
                                         <div className="form-group col-md-2">
                                             <label>Precio Unitario</label>
-                                            <input type="number" className="form-control" name='precio_unitario' onChange={e => handleInputChange(e, i)} />
+                                            <input type="number" className="form-control" min={1} name='precio_unitario' onChange={e => handleInputChange(e, i)} />
                                         </div>
                                         <div className="form-group col-md-1">
                                             <label>Unidades</label>

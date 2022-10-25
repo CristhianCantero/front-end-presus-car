@@ -14,8 +14,8 @@ export default function Aseguradoras() {
 
   const verAseguradoras_HTMLTABLE = listadoAseguradoras.map((item) => {
     return (
-      <tr key={item.id_aseguradora}>
-        <td>{item.id_aseguradora}</td>
+      <tr key={item.cuit}>
+        <td>{item.cuit}</td>
         <td>{item.nombre}</td>
         <td>
           <button type='button' className='btn btn-primary'>Actualizar</button>
