@@ -258,6 +258,7 @@ export default function Presupuestos() {
         doc.text("IVA (21%): $" + iva + ".-", 200, 260, null, null, "right");
         doc.line(125, 263, doc.internal.pageSize.width - 5, 263); // horizontal line
         doc.text("TOTAL (con IVA): $" + subtotal + ".-", 200, 270, null, null, "right");
+        doc.text("*IMPORTANTE* Este presupuesto es valido por 15 días.", 15, doc.internal.pageSize.height - 8, null, null, "left");
 
         doc.rect(2, 2, doc.internal.pageSize.width - 4, doc.internal.pageSize.height - 4, 'S');
         var nombrePdf = "Presupuesto - " + nombreVehiculo + " - " + dataPresupuesto.patente + ".pdf";
@@ -273,19 +274,35 @@ export default function Presupuestos() {
         if (list.length === 0) {
             swal("Error!", "No se puede generar un presupuesto SIN repuestos. Favor de agregar los repuestos pertinentes.", "warning");
         } else {
-            setLoading(true);
-            axios.get('/sanctum/csrf-cookie').then(response => {
-                axios.post(`/api/presupuestos`, infoFormulario).then(res => {
-                    if (res.data.status === 200) {
-                        var responsePresupuesto = res.data.datosPresupuesto;
-                        infoFormulario['nroPresupuesto'] = responsePresupuesto.id;
-                        generarPDF(infoFormulario);
-                        navigate('/');
-                        swal("Exito!", res.data.message, "success");
-                    } else {
-                        setInformacionFormulario({ ...informacionFormulario, error_list: res.data.validation_errors });
+            swal("Atencion!", "Esta a punto de generar un presupuesto, revisó los datos ingresados?.", "warning", {
+                buttons: {
+                    cancel: "Deseo verificar el formulario.",
+                    confirm: {
+                        text: "Si, generar presupuesto.",
+                        value: "confirm",
                     }
-                });
+                },
+            }).then((value) => {
+                switch (value) {
+                    case "confirm":
+                        setLoading(true);
+                        axios.get('/sanctum/csrf-cookie').then(response => {
+                            axios.post(`/api/presupuestos`, infoFormulario).then(res => {
+                                if (res.data.status === 200) {
+                                    var responsePresupuesto = res.data.datosPresupuesto;
+                                    infoFormulario['nroPresupuesto'] = responsePresupuesto.id;
+                                    generarPDF(infoFormulario);
+                                    navigate('/');
+                                    swal("Exito!", res.data.message, "success");
+                                } else {
+                                    setInformacionFormulario({ ...informacionFormulario, error_list: res.data.validation_errors });
+                                }
+                            });
+                        });
+                        break;
+                    default:
+                        break;
+                }
             });
         }
     }
