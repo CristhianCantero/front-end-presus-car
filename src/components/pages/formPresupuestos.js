@@ -12,6 +12,7 @@ export default function Presupuestos() {
     const navigate = useNavigate();
     // PRIMERO INICIALIZAMOS LOS LISTADOS
     const [loading, setLoading] = useState(false);
+    const [subtotal, setSubtotal] = useState("0");
     const [inputList, setInputList] = useState([]);
     const [listadoAseguradoras, setListadoAseguradoras] = useState([]);
     const [listadoMarcas, setListadoMarcas] = useState([]);
@@ -59,6 +60,65 @@ export default function Presupuestos() {
     const [descripcionRepuesto, setDescripcionRepuesto] = useState();
     const [paso, setPasos] = useState(0);
 
+    // Consultas SOAP
+    var XMLParser = require('react-xml-parser');
+
+    function sumaSOAP(subtotalActual, valorRepuesto) {
+        // console.log("Entre a la suma, el subtotal es ", subtotalActual, " y el valor es ", valorRepuesto)
+        return new Promise((resolve) => {
+            const options = {
+                method: 'POST',
+                url: 'http://www.dneonline.com/calculator.asmx',
+                headers: {
+                    'Content-Type': 'text/xml; charset=utf-8',
+                    SOAPAction: 'http://tempuri.org/Add'
+                },
+                data: `<?xml version="1.0" encoding="utf-8"?>\n<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">\n  <soap:Body>\n    <Add xmlns="http://tempuri.org/">\n     <intA>${subtotalActual}</intA>\n      <intB>${valorRepuesto}</intB>\n    </Add>\n  </soap:Body>\n</soap:Envelope>`
+            };
+
+            axios.request(options).then(function (response) {
+                var jsonResponse = new XMLParser().parseFromString(response.data);
+                resolve(jsonResponse.children[0].children[0].children[0].value);
+            })
+        })
+    }
+
+    function multiplicarSOAP(repuesto) {
+        return new Promise((resolve) => {
+            // console.log("Entre a la multiplicacion, el repuesto es ", repuesto)
+            const options = {
+                method: 'POST',
+                url: 'http://www.dneonline.com/calculator.asmx',
+                headers: {
+                    'Content-Type': 'text/xml; charset=utf-8',
+                    SOAPAction: 'http://tempuri.org/Multiply'
+                },
+                data: `<?xml version="1.0" encoding="utf-8"?>\n<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">\n  <soap:Body>\n    <Multiply xmlns="http://tempuri.org/">\n      <intA>${repuesto.precio_unitario}</intA>\n      <intB>${repuesto.unidades}</intB>\n    </Multiply>\n  </soap:Body>\n</soap:Envelope>`
+            };
+
+            axios.request(options).then(function (response) {
+                var jsonResponse = new XMLParser().parseFromString(response.data);
+                resolve(jsonResponse.children[0].children[0].children[0].value);
+            })
+        })
+    }
+
+    // Calcular y asignar subtotal
+    const calcularSubtotal = async (callback) => {
+        var respuesta = "";
+        const list = [...inputList];
+        var subtotalInicial = 0;
+        for (let index = 0; index < list.length; index++) {
+            var repuestoActual = list[index];
+            var multiplicacion = "";
+            respuesta = await multiplicarSOAP(repuestoActual);
+            multiplicacion = Number(respuesta);
+            subtotalInicial = await sumaSOAP(subtotalInicial, multiplicacion);
+            // console.log(subtotalInicial);
+        }
+        callback(subtotalInicial)
+    }
+
     const handleMarca = e => {
         var inputData = { id_marca: e.target.value };
         axios.post(`/api/vehiculos/vehiculos-marca`, inputData)
@@ -100,6 +160,9 @@ export default function Presupuestos() {
                 break;
         }
         setInputList(list);
+        calcularSubtotal(function (response) {
+            setSubtotal(response)
+        })
     };
 
     const handleAddClick = () => {
@@ -147,6 +210,9 @@ export default function Presupuestos() {
         const list = [...inputList];
         list.splice(index, 1);
         setInputList(list);
+        calcularSubtotal(function (response) {
+            setSubtotal(response)
+        })
     };
 
     const generarPDF = dataPresupuesto => {
@@ -427,11 +493,11 @@ export default function Presupuestos() {
                                             </div>
                                             <div className="form-group col-md-2">
                                                 <label>Precio Unitario</label>
-                                                <input type="number" className="form-control" min={1} name='precio_unitario' onChange={e => handleInputChange(e, i)} />
+                                                <input type="number" className="form-control" min={1} name='precio_unitario' onBlur={e => handleInputChange(e, i)} />
                                             </div>
                                             <div className="form-group col-md-1">
                                                 <label>Unidades</label>
-                                                <input type="number" className="form-control" name='unidades' defaultValue={1} onChange={e => handleInputChange(e, i)} />
+                                                <input type="number" className="form-control" name='unidades' defaultValue={1} onBlur={e => handleInputChange(e, i)} />
                                             </div>
                                             <div className="col-md-2">
                                                 <label>Quitar Repuesto</label>
@@ -454,6 +520,24 @@ export default function Presupuestos() {
                                 <button type="button" className="btn btn-primary" disabled={paso === 1} onClick={() => { setPasos((paso) => paso + 1) }}>
                                     Siguiente Paso
                                 </button>
+                            </div>
+                            <div className='row d-flex justify-content-end'>
+                                <table className='tablaValores table' hidden={paso === 0}>
+                                    <tbody>
+                                        <tr>
+                                            <td>Subtotal S/IVA: </td>
+                                            <td>$15000</td>
+                                        </tr>
+                                        <tr>
+                                            <td>IVA (21%): </td>
+                                            <td>$2500</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Subtotal C/IVA: </td>
+                                            <td>${subtotal}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                             <button type="submit" hidden={paso !== 1} className="btn btn-success">
                                 Generar Presupuesto
