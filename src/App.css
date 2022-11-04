@@ -65,6 +65,11 @@ table.repuestosTable th, td {
   text-align: center;
 }
 
+.table.tablaValores {
+  width: 250px;
+  margin: 20px;
+}
+
 .home {
   /* background-image: url('./images/img-1.jpg'); */
   background-position: center;
