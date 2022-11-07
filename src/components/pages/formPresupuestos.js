@@ -493,11 +493,11 @@ export default function Presupuestos() {
                                             </div>
                                             <div className="form-group col-md-2">
                                                 <label>Precio Unitario</label>
-                                                <input type="number" className="form-control" min={1} name='precio_unitario' onBlur={e => handleInputChange(e, i)} />
+                                                <input type="number" className="form-control" min={1} name='precio_unitario' onChange={e => handleInputChange(e, i)} />
                                             </div>
                                             <div className="form-group col-md-1">
                                                 <label>Unidades</label>
-                                                <input type="number" className="form-control" name='unidades' defaultValue={1} onBlur={e => handleInputChange(e, i)} />
+                                                <input type="number" className="form-control" name='unidades' defaultValue={1} onChange={e => handleInputChange(e, i)} />
                                             </div>
                                             <div className="col-md-2">
                                                 <label>Quitar Repuesto</label>
