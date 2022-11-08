@@ -13,6 +13,8 @@ export default function Presupuestos() {
     // PRIMERO INICIALIZAMOS LOS LISTADOS
     const [loading, setLoading] = useState(false);
     const [subtotal, setSubtotal] = useState("0");
+    const [subtotalSinIva, setSubtotalIva] = useState("0");
+    const [iva, setIva] = useState("0");
     const [inputList, setInputList] = useState([]);
     const [listadoAseguradoras, setListadoAseguradoras] = useState([]);
     const [listadoMarcas, setListadoMarcas] = useState([]);
@@ -78,12 +80,33 @@ export default function Presupuestos() {
 
             axios.request(options).then(function (response) {
                 var jsonResponse = new XMLParser().parseFromString(response.data);
-                resolve(jsonResponse.children[0].children[0].children[0].value);
+                var responseNumber = Number(jsonResponse.children[0].children[0].children[0].value);
+                resolve(responseNumber);
             })
         })
     }
 
-    function multiplicarSOAP(repuesto) {
+    function restaSOAP(subtotal, iva) {
+        return new Promise((resolve) => {
+            const options = {
+                method: 'POST',
+                url: 'http://www.dneonline.com/calculator.asmx',
+                headers: {
+                    'Content-Type': 'text/xml; charset=utf-8',
+                    SOAPAction: 'http://tempuri.org/Subtract'
+                },
+                data: `<?xml version="1.0" encoding="utf-8"?>\n<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">\n  <soap:Body>\n    <Subtract xmlns="http://tempuri.org/">\n     <intA>${subtotal}</intA>\n      <intB>${iva}</intB>\n    </Subtract>\n  </soap:Body>\n</soap:Envelope>`
+            };
+
+            axios.request(options).then(function (response) {
+                var jsonResponse = new XMLParser().parseFromString(response.data);
+                var responseNumber = Number(jsonResponse.children[0].children[0].children[0].value);
+                resolve(responseNumber);
+            })
+        })
+    }
+
+    function multiplicarRepuestoSOAP(repuesto) {
         return new Promise((resolve) => {
             // console.log("Entre a la multiplicacion, el repuesto es ", repuesto)
             const options = {
@@ -103,6 +126,48 @@ export default function Presupuestos() {
         })
     }
 
+    function calcularIvaMultiSOAP(subtotal) {
+        return new Promise((resolve) => {
+            // console.log("Entre a la multiplicacion, el repuesto es ", repuesto)
+            const options = {
+                method: 'POST',
+                url: 'http://www.dneonline.com/calculator.asmx',
+                headers: {
+                    'Content-Type': 'text/xml; charset=utf-8',
+                    SOAPAction: 'http://tempuri.org/Multiply'
+                },
+                data: `<?xml version="1.0" encoding="utf-8"?>\n<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">\n  <soap:Body>\n    <Multiply xmlns="http://tempuri.org/">\n      <intA>${subtotal}</intA>\n      <intB>21</intB>\n    </Multiply>\n  </soap:Body>\n</soap:Envelope>`
+            };
+
+            axios.request(options).then(function (response) {
+                var jsonResponse = new XMLParser().parseFromString(response.data);
+                var responseNumber = Number(jsonResponse.children[0].children[0].children[0].value);
+                resolve(responseNumber);
+            })
+        })
+    }
+
+    function calcularIvaDivisionSOAP(iva) {
+        return new Promise((resolve) => {
+            // console.log("Entre a la multiplicacion, el repuesto es ", repuesto)
+            const options = {
+                method: 'POST',
+                url: 'http://www.dneonline.com/calculator.asmx',
+                headers: {
+                    'Content-Type': 'text/xml; charset=utf-8',
+                    SOAPAction: 'http://tempuri.org/Divide'
+                },
+                data: `<?xml version="1.0" encoding="utf-8"?>\n<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">\n  <soap:Body>\n    <Divide xmlns="http://tempuri.org/">\n      <intA>${iva}</intA>\n      <intB>100</intB>\n    </Divide>\n  </soap:Body>\n</soap:Envelope>`
+            };
+
+            axios.request(options).then(function (response) {
+                var jsonResponse = new XMLParser().parseFromString(response.data);
+                var responseNumber = Number(jsonResponse.children[0].children[0].children[0].value);
+                resolve(responseNumber);
+            })
+        })
+    }
+
     // Calcular y asignar subtotal
     const calcularSubtotal = async (callback) => {
         var respuesta = "";
@@ -111,12 +176,23 @@ export default function Presupuestos() {
         for (let index = 0; index < list.length; index++) {
             var repuestoActual = list[index];
             var multiplicacion = "";
-            respuesta = await multiplicarSOAP(repuestoActual);
+            respuesta = await multiplicarRepuestoSOAP(repuestoActual);
             multiplicacion = Number(respuesta);
             subtotalInicial = await sumaSOAP(subtotalInicial, multiplicacion);
             // console.log(subtotalInicial);
         }
-        callback(subtotalInicial)
+        console.log(subtotalInicial)
+        // var iva = 0;
+        // var subtotalSinIva = 0;
+        var ivaMulti = await calcularIvaMultiSOAP(subtotalInicial);
+        var ivaFinal = await calcularIvaDivisionSOAP(ivaMulti);
+        var subtotalSinIva = await restaSOAP(subtotalInicial, ivaFinal);
+        var arrayDatos = {
+            subtotal: subtotalInicial,
+            subtotalSinIVA: subtotalSinIva,
+            iva: ivaFinal,
+        }
+        callback(arrayDatos)
     }
 
     const handleMarca = e => {
@@ -161,7 +237,9 @@ export default function Presupuestos() {
         }
         setInputList(list);
         calcularSubtotal(function (response) {
-            setSubtotal(response)
+            setSubtotalIva(response.subtotalSinIVA)
+            setIva(response.iva)
+            setSubtotal(response.subtotal)
         })
     };
 
@@ -211,7 +289,9 @@ export default function Presupuestos() {
         list.splice(index, 1);
         setInputList(list);
         calcularSubtotal(function (response) {
-            setSubtotal(response)
+            setSubtotalIva(response.subtotalSinIVA)
+            setIva(response.iva)
+            setSubtotal(response.subtotal)
         })
     };
 
@@ -526,11 +606,11 @@ export default function Presupuestos() {
                                     <tbody>
                                         <tr>
                                             <td>Subtotal S/IVA: </td>
-                                            <td>$15000</td>
+                                            <td>${subtotalSinIva}</td>
                                         </tr>
                                         <tr>
                                             <td>IVA (21%): </td>
-                                            <td>$2500</td>
+                                            <td>${iva}</td>
                                         </tr>
                                         <tr>
                                             <td>Subtotal C/IVA: </td>
