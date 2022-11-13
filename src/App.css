@@ -61,7 +61,8 @@ td {
   text-align: center;
 }
 
-table.repuestosTable th, td {
+table.repuestosTable th,
+td {
   text-align: center;
 }
 
@@ -156,7 +157,12 @@ table.repuestosTable th, td {
   margin: auto;
 }
 
-.consulta-stock{
+.consulta-stock {
+  width: 70%;
+  margin: auto;
+}
+
+.orden-compra {
   width: 70%;
   margin: auto;
 }

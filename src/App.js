@@ -15,6 +15,7 @@ import Aseguradoras from './components/pages/Aseguradoras';
 import Usuarios from './components/pages/Usuarios';
 import AltaPresupuesto from './components/pages/formPresupuestos';
 import ConsultaStock from './components/pages/ConsultasStock';
+import AprobarOrdenCompra from './components/pages/AprobarPresupuesto';
 
 // Defino defaults para las consultas axios y no repetirlas en todos los archivos.
 axios.defaults.baseURL = "http://127.0.0.1:8000";
@@ -44,6 +45,7 @@ function App() {
           <Route path='/usuarios' element={< Usuarios />} />
           <Route path='/alta-presupuesto' element={< AltaPresupuesto />} />
           <Route path='/consulta-stock' element={< ConsultaStock />} />
+          <Route path='/orden-compra-presupuesto' element={< AprobarOrdenCompra />} />
           <Route path='*' element={<p>No hay nada aqui! Error 404</p>} />
         </Route>
       </Routes>

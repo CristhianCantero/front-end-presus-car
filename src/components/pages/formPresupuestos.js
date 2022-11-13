@@ -66,7 +66,6 @@ export default function Presupuestos() {
     var XMLParser = require('react-xml-parser');
 
     function sumaSOAP(subtotalActual, valorRepuesto) {
-        // console.log("Entre a la suma, el subtotal es ", subtotalActual, " y el valor es ", valorRepuesto)
         return new Promise((resolve) => {
             const options = {
                 method: 'POST',
@@ -108,7 +107,6 @@ export default function Presupuestos() {
 
     function multiplicarRepuestoSOAP(repuesto) {
         return new Promise((resolve) => {
-            // console.log("Entre a la multiplicacion, el repuesto es ", repuesto)
             const options = {
                 method: 'POST',
                 url: 'http://www.dneonline.com/calculator.asmx',
@@ -121,14 +119,14 @@ export default function Presupuestos() {
 
             axios.request(options).then(function (response) {
                 var jsonResponse = new XMLParser().parseFromString(response.data);
-                resolve(jsonResponse.children[0].children[0].children[0].value);
+                var responseNumber = Number(jsonResponse.children[0].children[0].children[0].value);
+                resolve(responseNumber);
             })
         })
     }
 
     function calcularIvaMultiSOAP(subtotal) {
         return new Promise((resolve) => {
-            // console.log("Entre a la multiplicacion, el repuesto es ", repuesto)
             const options = {
                 method: 'POST',
                 url: 'http://www.dneonline.com/calculator.asmx',
@@ -149,7 +147,6 @@ export default function Presupuestos() {
 
     function calcularIvaDivisionSOAP(iva) {
         return new Promise((resolve) => {
-            // console.log("Entre a la multiplicacion, el repuesto es ", repuesto)
             const options = {
                 method: 'POST',
                 url: 'http://www.dneonline.com/calculator.asmx',
@@ -170,20 +167,14 @@ export default function Presupuestos() {
 
     // Calcular y asignar subtotal
     const calcularSubtotal = async (callback) => {
-        var respuesta = "";
         const list = [...inputList];
         var subtotalInicial = 0;
         for (let index = 0; index < list.length; index++) {
             var repuestoActual = list[index];
             var multiplicacion = "";
-            respuesta = await multiplicarRepuestoSOAP(repuestoActual);
-            multiplicacion = Number(respuesta);
+            multiplicacion = await multiplicarRepuestoSOAP(repuestoActual);
             subtotalInicial = await sumaSOAP(subtotalInicial, multiplicacion);
-            // console.log(subtotalInicial);
         }
-        console.log(subtotalInicial)
-        // var iva = 0;
-        // var subtotalSinIva = 0;
         var ivaMulti = await calcularIvaMultiSOAP(subtotalInicial);
         var ivaFinal = await calcularIvaDivisionSOAP(ivaMulti);
         var subtotalSinIva = await restaSOAP(subtotalInicial, ivaFinal);
