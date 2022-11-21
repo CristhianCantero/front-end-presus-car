@@ -46,6 +46,9 @@ function Navbar() {
                 <Link className="nav-link active" aria-current="page" to="/">Inicio</Link>
               </li>
               <li className="nav-item">
+                <Link className="nav-link active" aria-current="page" to="/presupuestos">Presupuestos</Link>
+              </li>
+              <li className="nav-item">
                 <Link className="nav-link active" aria-current="page" to="/alta-presupuesto">Alta Presupuesto</Link>
               </li>
               <li className="nav-item">

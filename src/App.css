@@ -52,18 +52,17 @@ label {
 /*
 */
 
-table.marcaTable {
+table.marcaTable,
+table.presupuestosTable {
   width: 80%;
 }
 
+table.repuestosTable,
+table.presupuestosTable,
 table.marcaTable th,
 td {
   text-align: center;
-}
-
-table.repuestosTable th,
-td {
-  text-align: center;
+  margin-bottom: 20px;
 }
 
 .table.tablaValores {
@@ -152,17 +151,18 @@ td {
   font-size: 100px;
 }
 
+.consulta-stock,
+.orden-compra,
 .formulario-presupuesto {
   width: 70%;
   margin: auto;
+  margin-bottom: 20px;
 }
 
-.consulta-stock {
-  width: 70%;
-  margin: auto;
+.listado-repuestos-orden{
+  margin-left: 50px;
 }
 
-.orden-compra {
-  width: 70%;
-  margin: auto;
+.listado-repuestos-orden label{
+  font-size: large;
 }

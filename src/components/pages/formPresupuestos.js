@@ -188,6 +188,7 @@ export default function Presupuestos() {
 
     const handleMarca = e => {
         var inputData = { id_marca: e.target.value };
+        console.log(inputData)
         axios.post(`/api/vehiculos/vehiculos-marca`, inputData)
             .then(res => setListadoVehiculos(res.data))
             .catch(err => console.log(`Error: ${err}`));
@@ -429,7 +430,7 @@ export default function Presupuestos() {
                                     var responsePresupuesto = res.data.datosPresupuesto;
                                     infoFormulario['nroPresupuesto'] = responsePresupuesto.id;
                                     generarPDF(infoFormulario);
-                                    navigate('/');
+                                    navigate('/presupuestos');
                                     swal("Exito!", res.data.message, "success");
                                 } else {
                                     setInformacionFormulario({ ...informacionFormulario, error_list: res.data.validation_errors });
@@ -488,7 +489,7 @@ export default function Presupuestos() {
                                     <div className="form-group col-4">
                                         {/* Marca */}
                                         <label>Marca</label>
-                                        <select className="form-select" name='marca' onChange={e => handleMarca(e)}>
+                                        <select className="form-select" name='marca' onChange={(e) => handleMarca(e)}>
                                             <option value=''>---Elija la marca del vehiculo---</option>
                                             {listadoMarcas.map(marca => (
                                                 <option key={marca.id_marca} value={marca.id_marca} >

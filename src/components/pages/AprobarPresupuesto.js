@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import swal from 'sweetalert';
 import Loading from '../Loading';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 export default function AprobarOrdenCompra() {
     const navigate = useNavigate();
@@ -15,9 +15,11 @@ export default function AprobarOrdenCompra() {
     const [idTaller, setIdTaller] = useState([]);
     const [loading, setLoading] = useState(false);
 
+    const { id_presupuesto } = useParams();
+
     useEffect(() => {
         var data = {
-            idPresupuesto: 3,
+            idPresupuesto: id_presupuesto,
         }
         axios.get('/sanctum/csrf-cookie').then(response => {
             axios.post(`/api/presupuestos/repuestos`, data).then(res => {
@@ -59,11 +61,10 @@ export default function AprobarOrdenCompra() {
     const subirOrdenCompra = (e) => {
         e.preventDefault();
         var datosOrden = {
-            id_presupuesto: 3,
+            id_presupuesto: id_presupuesto,
             id_taller: idTaller,
             repuestos: listadoRepuestosAprobados
         }
-        console.log(datosOrden)
         swal("Atencion!", "Esta a punto de aprobar una orden de compra, revisó los datos ingresados?.", "warning", {
             buttons: {
                 cancel: "Deseo verificar los datos de la orden.",
@@ -80,9 +81,9 @@ export default function AprobarOrdenCompra() {
                         axios.post(`/api/orden-compra`, datosOrden).then(res => {
                             if (res.data.status === 200) {
                                 // console.log(res.data.datosOrden)
-                                navigate('/');
+                                navigate('/presupuestos');
                                 swal("Exito!", res.data.message, "success");
-                            }else{
+                            } else {
                                 setLoading(false)
                             }
                         });
@@ -125,12 +126,12 @@ export default function AprobarOrdenCompra() {
                                 </select>
                             </div>
                             <h3>Listado repuestos</h3>
-                            <div className='form-group col'>
+                            <div className='listado-repuestos-orden form-group col'>
                                 {listadoRepuestos.map(repuesto => (
                                     <div className="form-check">
                                         <input className="form-check-input" type="checkbox" value={repuesto.id_repuesto_presupuesto} id={repuesto.id_repuesto_presupuesto} onChange={(e) => handleRepuestosAprobados(e)} />
                                         <label className="form-check-label" for={repuesto.id_repuesto_presupuesto}>
-                                            {repuesto.nombre}
+                                            {repuesto.codigo_repuesto} - {repuesto.nombre}
                                         </label>
                                     </div>
                                 ))}
